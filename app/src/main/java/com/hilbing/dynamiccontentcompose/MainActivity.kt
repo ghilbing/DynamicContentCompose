@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 
 
@@ -29,26 +33,32 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(){
+fun MainScreen(viewModel: MainViewModel = MainViewModel()){
+
+    val newNameStateContent = viewModel.textFieldState.observeAsState("")
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        GreetingList()
+        GreetingMessage(
+            newNameStateContent.value)
+            { newName -> viewModel.onTextChanged(newName)}
     }
 
 }
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun GreetingList(){
-    val greetingListState = remember {mutableStateListOf<String>("Gretel", "Dany")}
-    for(name in greetingListState){
-        Greeting(name = name)
-    }
-    Button(onClick = {greetingListState.add("Sol")}){
-        Text("Add new name")
+fun GreetingMessage(textFieldValue: String,
+                 textFieldUpdate: (newName: String) -> Unit){
+
+
+    TextField(value = textFieldValue, onValueChange = textFieldUpdate)
+
+    Button(onClick = {}){
+        Text(textFieldValue)
     }
 }
 
